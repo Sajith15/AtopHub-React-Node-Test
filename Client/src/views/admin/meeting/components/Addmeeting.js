@@ -43,22 +43,55 @@ const AddMeeting = (props) => {
         initialValues: initialValues,
         validationSchema: MeetingSchema,
         onSubmit: (values, { resetForm }) => {
-            
+            AddData();
         },
     });
     const { errors, touched, values, handleBlur, handleChange, handleSubmit, setFieldValue } = formik
 
     const AddData = async () => {
-
+        try {
+            setIsLoding(true);
+            let response = await postApi('api/meeting/add', values);
+            if (response.status === 200) {
+                toast.success('Meeting created successfully');
+                formik.resetForm();
+                onClose();
+                setAction && setAction((prev) => !prev);
+                fetchData && fetchData();
+            } else {
+                toast.error(response?.response?.data?.error || 'Failed to create meeting');
+            }
+        } catch (e) {
+            console.error(e);
+            toast.error('Failed to create meeting');
+        } finally {
+            setIsLoding(false);
+        }
     };
 
     const fetchAllData = async () => {
-        
+        try {
+            // Fetch contacts
+            const contactResponse = await getApi(user.role === 'superAdmin' ? 'api/contact/' : `api/contact/?createBy=${user._id}`);
+            if (contactResponse.status === 200) {
+                setContactData(contactResponse.data);
+            }
+
+            // Fetch leads
+            const leadResponse = await getApi(user.role === 'superAdmin' ? 'api/lead/' : `api/lead/?createBy=${user._id}`);
+            if (leadResponse.status === 200) {
+                setLeadData(leadResponse.data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+        }
     }
 
     useEffect(() => {
-
-    }, [props.id, values.related])
+        if (isOpen) {
+            fetchAllData();
+        }
+    }, [isOpen, props.id, values.related])
 
     const extractLabels = (selectedItems) => {
         return selectedItems.map((item) => item._id);
@@ -203,4 +236,3 @@ const AddMeeting = (props) => {
 }
 
 export default AddMeeting
-

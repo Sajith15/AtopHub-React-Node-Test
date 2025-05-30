@@ -469,22 +469,22 @@ const CommonCheckTable = (props) => {
                                 : data && data?.length === 0 || data === undefined ? (
                                     <Tr>
                                         <Td colSpan={columns.length}>
-                                            <Text textAlign={'center'} width="100%" color={textColor} fontSize="sm" fontWeight="700">
+                                            <Flex justifyContent={'center'} alignItems={'center'} width="100%" color={textColor} fontSize="sm" fontWeight="700">
                                                 <DataNotFound />
-                                            </Text>
+                                            </Flex>
                                         </Td>
                                     </Tr>
                                 ) : page?.map((row, i) => {
                                     prepareRow(row);
                                     return (
-                                        <Tr {...row?.getRowProps()}>
+                                        <Tr {...row?.getRowProps()} key={i}>
                                             {row?.cells?.map((cell, index) => {
                                                 let data = "";
                                                 columnData?.forEach((item) => {
                                                     if (cell?.column.Header === item.Header) {
                                                         if (item.cell && typeof item.cell === 'function') {
                                                             data = (
-                                                                <Flex Flex align="center" justifyContent={item?.Header === 'Action' && 'center'}>
+                                                                <Flex align="center" justifyContent={item?.Header === 'Action' && 'center'}>
                                                                     <Text color={textColor} fontSize="sm" fontWeight="700" >
                                                                         {item.cell(cell) === ' ' ? '-' : item.cell(cell)}
                                                                     </Text>
@@ -544,14 +544,14 @@ const CommonCheckTable = (props) => {
                         <ModalBody>
                             <div>
                                 {columnData?.map((column) => (
-                                    <Text display={"flex"} key={column?.accessor} py={2}>
+                                    <Flex align="center" key={column?.accessor} py={2}>
                                         <Checkbox
                                             defaultChecked={columns?.some((item) => item?.accessor === column?.accessor)}
                                             onChange={() => toggleColumnVisibility(column?.accessor)}
                                             pe={2}
                                         />
-                                        {column?.Header}
-                                    </Text>
+                                        <Text>{column?.Header}</Text>
+                                    </Flex>
                                 ))}
                             </div>
                         </ModalBody>
